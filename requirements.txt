@@ -1,2 +1,2 @@
 python-can
-paho
+paho-mqtt
