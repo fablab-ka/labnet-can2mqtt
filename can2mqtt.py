@@ -5,11 +5,14 @@ import paho.mqtt.client as mqtt
 
 from config import Config
 
+
 def onMqttMessage(client, userdata, mqttMessage):
+    logging.debug("received MQTT message")
     pass # todo send can message
 
 
 def onCanMessage(mqttClient, canMessage):
+    logging.debug("received CAN message")
     pass # todo sendMqttMessage(mqttClient, canMessage)
 
 def sendCanMessage(bus, id, msg):
@@ -30,7 +33,7 @@ def sendMqttMessage(mqttClient, message):
 
 def init():
     FORMAT = '%(asctime)-15s %(message)s'
-    logging.basicConfig(format=FORMAT)
+    logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 
     logging.info("Starting CAN bus")
     if not Config.canbus_type:
