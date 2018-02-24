@@ -27,7 +27,11 @@ def sendMqttMessage(mqttClient, message):
     except BaseException as e:
         logging.error("Error relaying message {%s}. Error: {%s}" % (message, e))
 
+
 def init():
+    FORMAT = '%(asctime)-15s %(message)s'
+    logging.basicConfig(format=FORMAT)
+
     logging.info("Starting CAN bus")
     if not Config.canbus_type:
         logging.error("No can interface specified. Valid interfaces are: %s" %
@@ -63,7 +67,8 @@ def init():
     try:
         mqttClient.subscribe(Config.mqtt_topic_base)
     except BaseException as e:
-        logging.error("Error adding subscribtion \"%s\": %s" % (s, e))
+        logging.error("Error adding subscribtion \"%s\": %s" %
+                      (Config.mqtt_topic_base, e))
 
     logging.info("Starting main loop")
     try:
