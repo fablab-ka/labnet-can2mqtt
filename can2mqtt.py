@@ -117,12 +117,12 @@ def init():
         bus.shutdown()
         notifier.stop()
 
-    logging.info("Adding MQTT subscriptions")
-    try:
-        mqtt_client.subscribe(Config.mqtt_topic_base)
-    except BaseException as e:
-        logging.error("Error adding subscribtion \"%s\": %s" %
-                      (Config.mqtt_topic_base, e))
+    # logging.info("Adding MQTT subscriptions")
+    # try:
+    #     mqtt_client.subscribe(Config.mqtt_topic_base)
+    # except BaseException as e:
+    #     logging.error("Error adding subscribtion \"%s\": %s" %
+    #                   (Config.mqtt_topic_base, e))
 
     logging.info("Starting main loop")
     try:
