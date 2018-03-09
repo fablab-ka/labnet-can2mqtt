@@ -23,7 +23,7 @@ def on_can_message(mqtt_client, can_message):
         logging.debug("Message Type: local event")
         handle_local_event_message(mqtt_client, arbitration_id, data)
     else:
-        logging.debug("Unknown Message Type '%s'" % message_type.format('#02x'))
+        logging.debug("Unknown Message Type '%s'" % format(message_type, '#02x'))
 
 
 def handle_local_event_message(mqtt_client, arbitration_id, data):
@@ -37,7 +37,7 @@ def handle_local_event_message(mqtt_client, arbitration_id, data):
         logging.debug("Node Type: Power-Hub")
         handle_power_hub_message(mqtt_client, arbitration_id, data)
     else:
-        logging.debug("Unknown Node Type '%s'" % node_type.format('#01x'))
+        logging.debug("Unknown Node Type '%s'" % format(node_type, '#01x'))
 
 
 def handle_power_hub_message(mqtt_client, arbitration_id, data):
