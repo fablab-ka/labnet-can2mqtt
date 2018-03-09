@@ -66,7 +66,7 @@ def handle_power_hub_message(mqtt_client, arbitration_id, data):
 
 
 def create_mqtt_stat_topic(steckdosen_id, dosen_id):
-    return Config.mqtt_topic_template % [steckdosen_id, dosen_id, "/stat/power"]
+    return Config.mqtt_topic_template.format(steckdosen_id, dosen_id, "/stat/power")
 
 def send_can_message(bus, id, msg):
     bus.send(can.Message(extended_id=False, arbitration_id=id, data=msg))
@@ -119,7 +119,7 @@ def init():
 
     logging.info("Adding MQTT subscriptions")
     try:
-        mqtt_client.subscribe(Config.mqtt_topic_template % ["*", "*", "*"])
+        mqtt_client.subscribe(Config.mqtt_topic_template.format("*", "*", "*")
     except BaseException as e:
         logging.error("Error adding subscribtion \"%s\": %s" %
                       (Config.mqtt_topic_template, e))
