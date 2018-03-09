@@ -119,7 +119,7 @@ def init():
 
     logging.info("Adding MQTT subscriptions")
     try:
-        mqtt_client.subscribe(Config.mqtt_topic_template.format("*", "*", "*")
+        mqtt_client.subscribe(Config.mqtt_topic_template.format("*", "*", "*"))
     except BaseException as e:
         logging.error("Error adding subscribtion \"%s\": %s" %
                       (Config.mqtt_topic_template, e))
