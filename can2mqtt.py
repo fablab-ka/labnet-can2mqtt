@@ -72,8 +72,8 @@ def on_can_message(mqtt_client, can_message):
     
     message_type = (arbitration_id & 0xFF000000) >> 24
 
-    if message_type == 0x01:
-        logging.debug("Message Type: local event")
+    if message_type == 0x04:
+        logging.debug("Message Type: announcement")
         handle_local_event_message(mqtt_client, arbitration_id, data)
     else:
         logging.error("Unknown Message Type '%s'" % format(message_type, '#04x'))
