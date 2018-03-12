@@ -97,6 +97,8 @@ def handle_power_hub_message(mqtt_client, arbitration_id, data):
     node_id  = (arbitration_id & 0x000FF000) >> 12
     event_id = (arbitration_id & 0x00000FFF) >> 0
 
+    logging.debug("Event ID: %s" % format(event_id, '#04x'))
+
     if event_id <= 0x30 or event_id > 0x34:
         logging.warn('Not mapped Sensor "%s"' % format(event_id, '#04x'))
         return
