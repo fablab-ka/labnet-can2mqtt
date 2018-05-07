@@ -99,6 +99,18 @@ def handle_power_hub_message(mqtt_client, arbitration_id, data):
 
     logging.debug("Event ID: %s" % format(event_id, '#04x'))
 
+    if event_id == 0x20:
+        logging.debug('Sensor: Fuse - message ignored.')
+        return
+
+    if event_id == 0x01:
+        logging.debug('Sensor: start up - message ignored')
+        return
+
+    if event_id == 0x02:
+        logging.debug('Sensor: keep alive - message ignored')
+        return
+
     if event_id <= 0x30 or event_id > 0x34:
         logging.warn('Not mapped Sensor "%s"' % format(event_id, '#04x'))
         return
