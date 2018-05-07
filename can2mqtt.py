@@ -11,10 +11,10 @@ from config import Config
 
 def on_mqtt_message(bus, client, userdata, mqtt_message):
     logging.debug("received MQTT message")
-    
+
     #only for debugging, loopback
     #bus = can.interface.Bus(Config.canbus_interface, bustype=Config.canbus_type)
-    
+
     match = re.search(Config.mqtt_cmd_topic_iterators_regex, mqtt_message.topic)
     if match:
         hub = Config.default_target_power_hub
@@ -46,7 +46,7 @@ def handle_mqtt_power_message(bus, hub, index1, index2, payload):
         payload = payload + (data << (6 - index2) * 8)
         for i in range(index2-1):
             payload = payload + (0x02 << (5 - i) * 8)
-        
+
         send_can_message(bus, arbitration_id, long_to_bytes(payload))
 
 def long_to_bytes(val):
@@ -54,14 +54,14 @@ def long_to_bytes(val):
 
     for i in range(8):
         result.insert(0, (val & (0xFF << i*8)) >> i*8)
-    
+
     return bytearray(result)
 
 def send_can_message(bus, id, data):
-    logging.debug("Sending CAN message with arbitration id %s and data %s" % 
+    logging.debug("Sending CAN message with arbitration id %s and data %s" %
                   (format(id, '#04x'), hexlify(data)))
-    
-    bus.send(can.Message(extended_id=False, arbitration_id=id, data=data))
+
+    bus.send(can.Message(is_extended_id=True, arbitration_id=id, data=data))
 
 def on_can_message(mqtt_client, can_message):
     logging.debug("received CAN message")
@@ -69,7 +69,7 @@ def on_can_message(mqtt_client, can_message):
     data = can_message.data
 
     logging.debug("arbitration_id: %s" % format(arbitration_id, '#10x'))
-    
+
     message_type = (arbitration_id & 0xFF000000) >> 24
 
     if message_type == 0x04:
@@ -106,7 +106,7 @@ def handle_power_hub_message(mqtt_client, arbitration_id, data):
     steckdosen_id = node_id * (event_id - 0x30)
 
     data = struct.unpack(">q", data)[0]
-    
+
     logging.debug("CAN Payload: %s" % format(data, '#02x'))
 
     min_amp = (data & 0xFF00000000000000) >> 56
@@ -114,7 +114,7 @@ def handle_power_hub_message(mqtt_client, arbitration_id, data):
 
     logging.debug("min amp %s" % min_amp)
     logging.debug("max amp %s" % max_amp)
-    
+
     dose = []
     dose.append(int((data & 0x0000FF0000000000) >> 40))
     dose.append(int((data & 0x000000FF00000000) >> 32))
@@ -147,7 +147,7 @@ def create_mqtt_stat_topic(steckdosen_id, dosen_id):
 
 def send_mqtt_message(mqtt_client, topic, payload):
     logging.debug("Sending MQTT Message '%s' to topic '%s'" % (payload, topic))
-    
+
     try:
         result = mqtt_client.publish(topic, payload)
         if not (result[0] == mqtt.MQTT_ERR_SUCCESS):
@@ -197,7 +197,7 @@ def init():
         for i in range(1, Config.mqtt_topic_iterator1_max+1):
             for j in range(1, Config.mqtt_topic_iterator2_max + 1):
                 subscription_topic = Config.mqtt_topic_template % (i, j, "cmd/power")
-                
+
                 logging.info("Adding MQTT subscription to '%s'" % subscription_topic)
                 mqtt_client.subscribe(subscription_topic)
     except BaseException as e:
