@@ -61,7 +61,7 @@ def send_can_message(bus, id, data):
     logging.debug("Sending CAN message with arbitration id %s and data %s" %
                   (format(id, '#04x'), hexlify(data)))
 
-    bus.send(can.Message(is_extended_id=True, arbitration_id=id, data=data))
+    bus.send(can.Message(extended_id=True, arbitration_id=id, data=data))
 
 def on_can_message(mqtt_client, can_message):
     logging.debug("received CAN message")
