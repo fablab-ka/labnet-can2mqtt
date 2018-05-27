@@ -172,7 +172,7 @@ def send_mqtt_message(mqtt_client, topic, payload):
 
 def init():
     FORMAT = '%(asctime)-15s %(message)s'
-    logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
 
     logging.info("Starting CAN bus")
     if not Config.canbus_type:

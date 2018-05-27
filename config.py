@@ -12,3 +12,4 @@ class Config:
     canbus_interface = "can0"
     canbus_type = "socketcan"
 
+    log_level = "error"

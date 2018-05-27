@@ -7,8 +7,7 @@ This software is to be installed on the LabNet Bridge. It translates incoming CA
 ## Setup
 
 * clone onto an raspberry pi (or similar) that is connected to the CAN interface
-* pip install -r requirements.txt
-* Edit the config.py
+* `sudo ./install.sh`
 
 
 ## Configuration
