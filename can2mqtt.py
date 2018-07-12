@@ -15,7 +15,6 @@ httpApp = Flask(__name__)
 
 @httpApp.route('/css/<path:path>')
 def send_css(path):
-    print path
     return send_from_directory('static', path)
 
 @httpApp.route("/")
