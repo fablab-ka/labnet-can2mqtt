@@ -22,3 +22,16 @@ This software is to be installed on the LabNet Bridge. It translates incoming CA
 * mqtt_cmd_topic_iterators_regex - the regex to find the iterators inside the mqtt topic (see mqtt_topic_template)
 * canbus_interface - the name of the CAN interface that should be used
 * canbus_type - the type of the CAN interface (e.g. socketcan or virtual to test)
+
+## Debugging
+
+### without CAN hardware
+
+set the canbus_type to "virtual" in the config.py
+
+### without an MQTT server
+
+execute the following command on shell with installed nodejs
+```npx mosca -v | npx pino```
+
+then set localhost as mqtt_broker in the config.py

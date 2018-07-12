@@ -5,9 +5,22 @@ import struct
 import re
 import paho.mqtt.client as mqtt
 from binascii import unhexlify, hexlify
+from flask import Flask, render_template, send_from_directory
+from werkzeug.serving import run_simple
 
 from config import Config
 
+httpApp = Flask(__name__)
+
+
+@httpApp.route('/css/<path:path>')
+def send_css(path):
+    print path
+    return send_from_directory('static', path)
+
+@httpApp.route("/")
+def hello():
+    return render_template("index.html")
 
 def on_mqtt_message(bus, client, userdata, mqtt_message):
     logging.debug("received MQTT message")
@@ -170,7 +183,7 @@ def send_mqtt_message(mqtt_client, topic, payload):
         logging.error(
             "Error relaying message {%s} '%s'. Error: {%s}" % (format(payload, '#2x'), topic, e))
 
-def init():
+def start():
     FORMAT = '%(asctime)-15s %(message)s'
     logging.basicConfig(format=FORMAT, level=logging.INFO)
 
@@ -216,6 +229,9 @@ def init():
         logging.error("Error adding subscribtion \"%s\": %s" %
                       (Config.mqtt_topic_template, e))
 
+    logging.info("Starting web server")
+    run_simple('localhost', Config.http_port, httpApp, use_reloader=True, extra_files=["static/main.css", "templates/index.html"])
+
     logging.info("Starting main loop")
     try:
         while True:
@@ -229,4 +245,4 @@ def init():
         mqtt_client.disconnect()
 
 if __name__ == '__main__':
-    init()
+    start()
