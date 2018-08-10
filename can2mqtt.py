@@ -29,10 +29,10 @@ def on_mqtt_message(bus, client, userdata, mqtt_message):
 
     match = re.search(Config.mqtt_cmd_topic_iterators_regex, mqtt_message.topic)
     if match:
-        hub = Config.default_target_power_hub
-        index1 = int(match.group(1))
-        index2 = int(match.group(2))
-        cmd = match.group(3)
+        hub = int(match.group(1))
+        index1 = int(match.group(2))
+        index2 = int(match.group(3))
+        cmd = match.group(4)
 
         if cmd == 'power':
             handle_mqtt_power_message(bus, hub, index1, index2, mqtt_message.payload)
