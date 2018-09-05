@@ -185,7 +185,7 @@ def send_mqtt_message(mqtt_client, topic, payload):
 
 def start():
     FORMAT = '%(asctime)-15s %(message)s'
-    logging.basicConfig(format=FORMAT, level=logging.INFO)
+    logging.basicConfig(format=FORMAT, level=logging.DEBUG)
 
     if Config.log_file:
         logger = logging.getLogger()
