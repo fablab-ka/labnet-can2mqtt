@@ -107,10 +107,9 @@ def handle_local_event_message(mqtt_client, arbitration_id, data):
         logging.error("Unknown Node Type '%s'" % format(node_type, '#03x'))
 
 
-def handle_power_hub_message(mqtt_client, arbitration_id, data):
-    node_id = (arbitration_id & 0x000FF000) >> 12
+def handle_power_hub_message(mqtt_client, arbitration_id, datanode_id, ): = (arbitration_id & 0x000FF000) >> 12
     event_id = (arbitration_id & 0x00000FFF) >> 0
-    steckdosen_id = (arbitration_id & 0x0000000F) >> 0
+    leiste_id = (arbitration_id & 0x0000000F) >> 0
 
     logging.debug("Event ID: %s" % format(event_id, '#04x'))
 
@@ -149,7 +148,7 @@ def handle_power_hub_message(mqtt_client, arbitration_id, data):
     dose.append(int((data & 0x00000000000000FF) >> 0))
 
     for i in range(6):
-        topic = create_mqtt_stat_topic(steckdosen_id, node_id, i + 1)
+        topic = create_mqtt_stat_topic(node_id, leiste_id, i + 1)
         payload = payload_from_power_msg(dose[i])
         if payload:
             send_mqtt_message(mqtt_client, topic, payload)
@@ -231,11 +230,12 @@ def start():
 
     try:
         for i in range(1, Config.mqtt_topic_iterator1_max+1):
-            for j in range(1, Config.mqtt_topic_iterator2_max + 1):
-                subscription_topic = Config.mqtt_topic_template % (i, j, "cmd/power")
+            for j in range(1, Config.mqtt_topic_iterator2_max+1):
+                for k in range(1, Config.mqtt_topic_iterator3_max + 1):
+                    subscription_topic = Config.mqtt_topic_template % (i, j, k, "cmd/power")
 
-                logging.info("Adding MQTT subscription to '%s'" % subscription_topic)
-                mqtt_client.subscribe(subscription_topic)
+                    logging.info("Adding MQTT subscription to '%s'" % subscription_topic)
+                    mqtt_client.subscribe(subscription_topic)
     except BaseException as e:
         logging.error("Error adding subscribtion \"%s\": %s" %
                       (Config.mqtt_topic_template, e))
