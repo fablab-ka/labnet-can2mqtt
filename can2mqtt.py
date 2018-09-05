@@ -107,7 +107,8 @@ def handle_local_event_message(mqtt_client, arbitration_id, data):
         logging.error("Unknown Node Type '%s'" % format(node_type, '#03x'))
 
 
-def handle_power_hub_message(mqtt_client, arbitration_id, datanode_id, ): = (arbitration_id & 0x000FF000) >> 12
+def handle_power_hub_message(mqtt_client, arbitration_id, datanode_id, ):
+    node_id = (arbitration_id & 0x000FF000) >> 12
     event_id = (arbitration_id & 0x00000FFF) >> 0
     leiste_id = (arbitration_id & 0x0000000F) >> 0
 
