@@ -31,17 +31,18 @@ def on_mqtt_message(bus, client, userdata, mqtt_message):
     match = re.search(Config.mqtt_cmd_topic_iterators_regex, mqtt_message.topic)
     if match:
         hub = int(match.group(1))
-        index1 = int(match.group(2))
-        index2 = int(match.group(3))
+        leiste = int(match.group(2))
+        dose = int(match.group(3))
         cmd = match.group(4)
 
         if cmd == 'power':
-            handle_mqtt_power_message(bus, hub, index1, index2, mqtt_message.payload)
+            handle_mqtt_power_message(bus, hub, leiste, dose, mqtt_message.payload)
         else:
             logging.error("Unknown MQTT Command '%s'" % cmd)
 
-def handle_mqtt_power_message(bus, hub, index1, index2, payload):
-    logging.debug("Power Dose %s on Leiste %s for hub %s" % (index2, index1, hub))
+def handle_mqtt_power_message(bus, hub, leiste, dose, payload):
+    logging.debug("Power Dose %s on Leiste %s for hub %s" %
+                  (dose, leiste, hub))
 
     data = 0x02
     if payload == 'ON':
@@ -51,13 +52,13 @@ def handle_mqtt_power_message(bus, hub, index1, index2, payload):
 
     if not data == 0x02:
         arbitration_id = 0x01F00000
-        arbitration_id = arbitration_id + (hub << 12) + 0x30 + index1
+        arbitration_id = arbitration_id + (hub << 12) + 0x30 + leiste
 
         payload = 0x0000
-        for i in range(6-index2):
+        for i in range(6-dose):
             payload = payload + (0x02 << i * 8)
-        payload = payload + (data << (6 - index2) * 8)
-        for i in range(index2-1):
+        payload = payload + (data << (6 - dose) * 8)
+        for i in range(dose-1):
             payload = payload + (0x02 << (5 - i) * 8)
 
         send_can_message(bus, arbitration_id, long_to_bytes(payload))
@@ -107,8 +108,9 @@ def handle_local_event_message(mqtt_client, arbitration_id, data):
 
 
 def handle_power_hub_message(mqtt_client, arbitration_id, data):
-    node_id  = (arbitration_id & 0x000FF000) >> 12
+    node_id = (arbitration_id & 0x000FF000) >> 12
     event_id = (arbitration_id & 0x00000FFF) >> 0
+    steckdosen_id = (arbitration_id & 0x0000000F) >> 0
 
     logging.debug("Event ID: %s" % format(event_id, '#04x'))
 
@@ -128,8 +130,6 @@ def handle_power_hub_message(mqtt_client, arbitration_id, data):
         logging.warn('Not mapped Sensor "%s"' % format(event_id, '#04x'))
         return
 
-    steckdosen_id = node_id * (event_id - 0x30)
-
     data = struct.unpack(">q", data)[0]
 
     logging.debug("CAN Payload: %s" % format(data, '#02x'))
@@ -146,10 +146,10 @@ def handle_power_hub_message(mqtt_client, arbitration_id, data):
     dose.append(int((data & 0x00000000FF000000) >> 24))
     dose.append(int((data & 0x0000000000FF0000) >> 16))
     dose.append(int((data & 0x000000000000FF00) >>  8))
-    dose.append(int((data & 0x00000000000000FF) >>  0))
+    dose.append(int((data & 0x00000000000000FF) >> 0))
 
     for i in range(6):
-        topic = create_mqtt_stat_topic(steckdosen_id, i + 1)
+        topic = create_mqtt_stat_topic(steckdosen_id, node_id, i + 1)
         payload = payload_from_power_msg(dose[i])
         if payload:
             send_mqtt_message(mqtt_client, topic, payload)
@@ -166,8 +166,8 @@ def payload_from_power_msg(data):
         logging.error('Invalid payload %s' % data)
         return None
 
-def create_mqtt_stat_topic(steckdosen_id, dosen_id):
-    return Config.mqtt_topic_template % (steckdosen_id, dosen_id, "stat/power")
+def create_mqtt_stat_topic(steckdosen_id, node_id, dosen_id):
+    return Config.mqtt_topic_template % (steckdosen_id, node_id, dosen_id, "stat/power")
 
 
 def send_mqtt_message(mqtt_client, topic, payload):
