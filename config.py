@@ -15,3 +15,5 @@ class Config:
     #canbus_type = "virtual"
 
     log_level = "error"
+    log_file = None
+    #log_file = "can2mqtt.log"

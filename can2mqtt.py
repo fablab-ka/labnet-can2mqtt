@@ -7,6 +7,7 @@ import paho.mqtt.client as mqtt
 from binascii import unhexlify, hexlify
 from flask import Flask, render_template, send_from_directory
 from werkzeug.serving import run_simple
+from logging.handlers import TimedRotatingFileHandler
 
 from config import Config
 
@@ -185,6 +186,12 @@ def send_mqtt_message(mqtt_client, topic, payload):
 def start():
     FORMAT = '%(asctime)-15s %(message)s'
     logging.basicConfig(format=FORMAT, level=logging.INFO)
+
+    if Config.log_file:
+        logger = logging.getLogger()
+        handler = TimedRotatingFileHandler(
+            Config.log_file, when="midnight", interval=1, backupCount=5)
+        logger.addHandler(handler)
 
     logging.info("Starting CAN bus")
     if not Config.canbus_type:
