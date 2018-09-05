@@ -207,7 +207,9 @@ def start():
         logging.error("CAN bus error: %s" % e)
         sys.exit(1)
 
-    logging.info("Starting MQTT")
+    logging.info(
+        "Starting MQTT (" + Config.mqtt_broker + ":" + Config.mqtt_broker_port + ")"
+    )
 
     mqtt_client = mqtt.Client(client_id=Config.mqtt_client_id,
                          protocol=mqtt.MQTTv31)
