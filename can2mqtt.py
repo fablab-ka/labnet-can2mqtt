@@ -235,8 +235,10 @@ def start():
         logging.error("Error adding subscribtion \"%s\": %s" %
                       (Config.mqtt_topic_template, e))
 
-    logging.info("Starting web server")
-    run_simple('localhost', Config.http_port, httpApp, use_reloader=True, extra_files=["static/main.css", "templates/index.html"])
+    if Config.http_port:
+        logging.info("Starting web server")
+        run_simple('localhost', Config.http_port, httpApp, use_reloader=True,
+                   extra_files=["static/main.css", "templates/index.html"])
 
     logging.info("Starting main loop")
     try:

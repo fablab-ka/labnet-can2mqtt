@@ -6,7 +6,7 @@ class Config:
     mqtt_topic_iterator1_max = 4
     mqtt_topic_iterator2_max = 6
 
-    http_port = 8080
+    http_port = None
 
     mqtt_cmd_topic_iterators_regex = '^/FLKA/Steckdosen/Hub([0-9]*)/Leiste([0-9]*)/Dose([0-9]*)/cmd/(.*)$'
 
