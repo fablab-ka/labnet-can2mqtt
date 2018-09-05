@@ -218,6 +218,8 @@ def start():
     try:
         mqtt_errno = mqtt_client.connect(Config.mqtt_broker, Config.mqtt_broker_port, 60)
         if mqtt_errno != 0:
+            logging.error("Failed to connect to MQTT " +
+                          mqtt.error_string(mqtt_errno))
             raise Exception(mqtt.error_string(mqtt_errno))
 
         mqtt_client.loop_start()
@@ -225,6 +227,7 @@ def start():
         logging.error("MQTT error: %s" % e)
         bus.shutdown()
         notifier.stop()
+        return
 
     try:
         for i in range(1, Config.mqtt_topic_iterator1_max+1):
@@ -236,6 +239,7 @@ def start():
     except BaseException as e:
         logging.error("Error adding subscribtion \"%s\": %s" %
                       (Config.mqtt_topic_template, e))
+        return
 
     if Config.http_port:
         logging.info("Starting web server")
@@ -253,6 +257,7 @@ def start():
         notifier.stop()
         mqtt_client.loop_stop()
         mqtt_client.disconnect()
+        return
 
 if __name__ == '__main__':
     start()
